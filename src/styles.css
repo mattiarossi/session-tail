@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+
+@keyframes loading {
+  0% { transform: translateX(-100%); width: 40%; }
+  50% { transform: translateX(60%); width: 60%; }
+  100% { transform: translateX(200%); width: 40%; }
+}
+
+.log-line {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--log-font, 10px);
+  line-height: 1.5;
+  white-space: pre;
+}
+.log-line.wrap {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
