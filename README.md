@@ -35,11 +35,13 @@ If you just want to use it right away:
    session-tail
    ```
 
-The app watches Claude Code transcripts and scratchpad logs under `~/.claude/projects` and `/private/tmp/claude-*` and renders them as a live session stream. For a full feature-by-feature description, keep reading below.
+The app watches Claude Code transcripts and scratchpad logs under
+`~/.claude/projects` and `/private/tmp/claude-*` and renders them as a live session stream.
+For a full feature-by-feature description, keep reading below.
 
 ## Overview
 
-### What this document covers
+### What session-tail does
 
 session-tail is a local web page over the logs of every Claude Code session on this machine. It is for
 the person who runs several sessions at once and commissions long work to them (a test tag, a deploy
@@ -106,12 +108,12 @@ the limits.
     session-tail --port 3470
     session-tail --version
 
-Without rights on the global prefix: `npm install -g --prefix "$HOME/.local" <tarball>` with
-`$HOME/.local/bin` on the PATH.
+Without rights on the global prefix:
+`npm install -g --prefix "$HOME/.local" <tarball>` with `$HOME/.local/bin` on the PATH.
 
 The server listens on 127.0.0.1. The pages show every session's commands and logs verbatim,
-connection strings included; `--host` on another address makes them readable by anyone who reaches
-the port, and the start line says so. There is no authentication.
+connection strings included. `--host` on another address makes them readable by anyone who
+reaches the port, and the start line says so. There is no authentication.
 
 ### In the checkout
 
@@ -124,64 +126,75 @@ the port, and the start line says so. There is no authentication.
 
 ## The pages
 
-**Stream** (`/`). One column of lines from every included session, newest at the bottom. Each line
-carries the session (a coloured chip with the short id; it opens the session page), the file name (it
-opens the focus view; a preference hides the column) and the text; the time the collector read the
-line is a column off by default (every backfilled line carries the same one). A thin marker row with the
-time, the session and the file opens each burst of output: when the source changes, and when more than
-five seconds pass between two lines of one source. A preference turns the markers off. A burst longer than three lines folds to
-its first three and an ellipsis row, `… N more lines`, that expands it on click; an expanded burst ends
-with `▴ collapse`. The newest burst of a file stays whole, so a live tail keeps showing; a command's or an MCP call's
-block arrives complete and folds at once. A preference turns the folding off. The sidebar lists projects and their sessions,
-newest first, with the title Claude gave the session (or its first prompt), the branch, the time of the
-last activity, and the running tasks with their descriptions; a green dot marks a session active in
-the last ten minutes. The checkbox includes the session in the stream; with none checked, every
-session is included. Sessions idle for longer than the preference (24 hours) fold behind a count. The `◀` at the top of the
-sidebar, the `sessions` button in the top bar, or `b`, hides it; the `▶` strip on the left brings it
-back; the choice is kept. The
-stream starts with the newest 500 buffered lines, then follows. Scrolling up pauses the auto-scroll; `G` jumps to the end and resumes it, `g` goes
-to the start.
+**Stream** (`/`). One column of lines from every included session, newest at the bottom.
+Each line carries the session (a coloured chip with the short id; it opens the session page),
+the file name (it opens the focus view; a preference hides the column), and the text. The time
+that the collector read the line is a column off by default (every backfilled line carries the
+same one).
 
-**Session** (`/sessions/<project>/<session>`). The session's tasks (status, exit code, start, duration,
-description, the command folded, links to the output and the log) and its files (kind, size, time,
-the task each belongs to). A file removed from disk is listed as gone and still readable from what was
-buffered.
+A thin marker row with the time, the session, and the file opens each burst of output: when the
+source changes, and when more than five seconds pass between two lines of one source. A
+preference turns the markers off.
 
-The chip under the title sets the session's
-tag: click it, type, Enter (Escape cancels, an empty tag clears); the sidebar's chip does the same. The
-tag replaces the short id in every chip: the stream's rows and markers, the follow panel, the sidebar.
+A burst longer than three lines folds to its first three and an ellipsis row, `… N more lines`,
+that expands it on click. An expanded burst ends with `▴ collapse`. The newest burst of a file
+stays whole, so a live tail keeps showing. A command's or an MCP call's block arrives complete
+and folds at once. A preference turns the folding off.
+
+The sidebar lists projects and their sessions, newest first, with the title Claude gave the
+session (or its first prompt), the branch, the time of the last activity, and the running tasks
+with their descriptions. A green dot marks a session active in the last ten minutes. The
+checkbox includes the session in the stream; with none checked, every session is included.
+Sessions idle for longer than the preference (24 hours) fold behind a count.
+
+The `◀` at the top of the sidebar, the `sessions` button in the top bar, or `b`, hides it. The
+`▶` strip on the left brings it back; the choice is kept. The stream starts with the newest 500
+buffered lines, then follows. Scrolling up pauses the auto-scroll. `G` jumps to the end and
+resumes it; `g` goes to the start.
+
+**Session** (`/sessions/<project>/<session>`). The session's tasks (status, exit code, start,
+duration, description, the command folded, links to the output and the log) and its files (kind,
+size, time, the task each belongs to). A file removed from disk is listed as gone and still
+readable from what was buffered.
+
+The chip under the title sets the session's tag: click it, type, Enter (Escape cancels, an empty
+tag clears). The sidebar's chip does the same. The tag replaces the short id in every chip: the
+stream's rows and markers, the follow panel, and the sidebar.
 
 **File** (`/file?path=…`). The whole file with line numbers, read in pages from the start, then
-followed live. It starts with `← back` (also `Backspace`) and a link to the file's session; the session
-page starts with `← back` too. A task's file shows the task's status and description in the header. `wrap` wraps long
-lines.
+followed live. It starts with `← back` (also `Backspace`) and a link to the file's session. The
+session page starts with `← back` too. A task's file shows the task's status and description in
+the header. `wrap` wraps long lines.
 
-Every session also has a `commands` source: each foreground command the session ran, as a header line
-(`>> time · description · ok or ERROR (seconds)`), the command's first line (`$ …`) and its output, as the
-transcript records them. It streams, follows and opens like a file; the newest 200 commands are kept
-across restarts. And an `mcp` source: each call to an MCP server, as a header line (`>> time · server tool · ok or
-ERROR (seconds)`), the call's input as one line of JSON (`$ {…}`) and the result's text; the newest 200
-calls are kept across restarts.
+Every session also has a `commands` source: each foreground command the session ran, as a header
+line (`>> time · description · ok or ERROR (seconds)`), the command's first line (`$ …`), and its
+output, as the transcript records them. It streams, follows, and opens like a file. The newest
+200 commands are kept across restarts.
 
-**Follow panel** (every page). `f` in a file's view, or `follow` on a session page's file row, adds the
-file to the followed set; the lower third of the main pane then shows the live tails of every followed
-file merged, each line with the time it arrived and its session chip. A click on a line's text opens
-that file in the main pane; a chip in the panel's header opens its file, its `×` unfollows. `p` folds the panel
-to its header; its top edge drags to resize it, and the height is kept. The followed set is a preference, so it is there after a reload. `G` (or the
+And an `mcp` source: each call to an MCP server, as a header line (`>> time · server tool · ok or
+ERROR (seconds)`), the call's input as one line of JSON (`$ {…}`), and the result's text. The
+newest 200 calls are kept across restarts.
+
+**Follow panel** (every page). `f` in a file's view, or `follow` on a session page's file row,
+adds the file to the followed set. The lower third of the main pane then shows the live tails of
+every followed file merged, each line with the time it arrived and its session chip. A click on a
+line's text opens that file in the main pane; a chip in the panel's header opens its file, and
+its `×` unfollows. `p` folds the panel to its header. Its top edge drags to resize it, and the
+height is kept. The followed set is a preference, so it is there after a reload. `G` (or the
 `auto-scroll` button) keeps a view at its end; scrolling up pauses that.
 
 **Filter** (every page). Text or a regular expression (`.*`), case toggle (`Aa`), and a mode:
-*highlight* marks the matches in yellow and shows every line; *matching lines only* and *exclude
-matching* leave or remove the matching lines (on the server for the stream, in the browser for a file).
-`/` focuses the box, `Escape` clears it. A regular expression that does not compile turns the box red
-and leaves the previous rule in force.
+*highlight* marks the matches in yellow and shows every line. *matching lines only* and
+*exclude matching* leave or remove the matching lines (on the server for the stream, in the
+browser for a file). `/` focuses the box; `Escape` clears it. A regular expression that does
+not compile turns the box red and leaves the previous rule in force.
 
-**Highlight rules** (Preferences). Patterns with a colour, applied in order to every line, on the match
-or on the whole line. The defaults: `FAIL`, `ERROR`, `refused` and the like in red; `exit <n>` lines in
-red; `PASS`, `OK`, `done` in green; `SKIP`, `WARN` in amber; `== ` step headings in blue; `cpr-run` and
-`rmp-run` lines in purple. The command headers of a `commands` source are blue too. Rules are edited and reset on the page and kept in
-the store; a default the store lacks is added at start, so disable a default you do not want rather than
-delete it.
+**Highlight rules** (Preferences). Patterns with a colour, applied in order to every line, on the
+match or on the whole line. The defaults: `FAIL`, `ERROR`, `refused` and the like in red; `exit
+<n>` lines in red; `PASS`, `OK`, `done` in green; `SKIP`, `WARN` in amber; `== ` step headings
+in blue; `cpr-run` and `rmp-run` lines in purple. The command headers of a `commands` source are
+blue too. Rules are edited and reset on the page and kept in the store. A default the store
+lacks is added at start, so disable a default you do not want rather than delete it.
 
 ## Settings
 
@@ -196,8 +209,8 @@ delete it.
 ## What it does not do
 
 - It does not read binary files, `tool-cache/` directories, or `.json` files over 1 MB.
-- It does not keep history beyond the last 2 MB of each file in memory and what is on disk; a file
-  removed from disk is readable only until the server restarts.
+- It does not keep history beyond the last 2 MB of each file in memory and what is on disk.
+  A file removed from disk is readable only until the server restarts.
 - It does not search across files; the filter applies to what is shown.
 - It does not write to any session folder or transcript. The store is its only write.
 - It does not authenticate anyone: keep it on the loopback address.
