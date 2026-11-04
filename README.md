@@ -3,6 +3,18 @@
      and their contracts: docs/engineering.md. Describes what the tool does; no plan references. -->
 
 # session-tail
+![Stream view](docs/screenshots/stream-page.png)
+## Overview
+
+### What session-tail does
+
+- Multi-session Claude Code work
+- Live logs, tasks, and file activity
+- Filter and follow the output that matters
+
+session-tail is a local web UI for monitoring multiple Claude Code runs at once. It surfaces the
+live transcript fragments, task output, and generated logs that can be easy to lose in the
+standard chat interface, while also letting you track the activity of several runs in one place.
 
 ## Quick start
 
@@ -39,18 +51,6 @@ The app watches Claude Code transcripts and scratchpad logs under
 `~/.claude/projects` and `/private/tmp/claude-*` and renders them as a live session stream.
 For a full feature-by-feature description, keep reading below.
 
-## Overview
-
-### What session-tail does
-
-session-tail is a local web page over the logs of every Claude Code session on this machine. It is for
-the person who runs several sessions at once and commissions long work to them (a test tag, a deploy
-step, a package build) as background commands: it shows which session is running what, the lines
-every session is writing as they are written, the full log of one file, and a filter whose matches
-are highlighted. It assumes Claude Code's layout and nothing else: the scratchpad root
-`/private/tmp/claude-<uid>` and the transcripts under `~/.claude/projects`. One design choice shapes it:
-the tool reads the session transcript as well as the log folder, so a log file is shown with the
-description of the command that writes it and the command's exit status, not only its name.
 
 ### Where the data lives
 
